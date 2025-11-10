@@ -70,16 +70,20 @@ async function startServer() {
 
     // Require and mount routes after DB connects to avoid early startup failures
     try {
-      // The project routes are named auth.js, admin.js, caretaker.js, booking.js
+      // The project routes are named auth.js, admin.js, caretaker.js, booking.js, feedback.js, payment.js
       const authRoutes = require('./routes/auth');
       const adminRoutes = require('./routes/admin');
       const caretakerRoutes = require('./routes/caretaker');
       const bookingRoutes = require('./routes/booking');
+      const feedbackRoutes = require('./routes/feedback');
+      const paymentRoutes = require('./routes/payment');
 
       app.use('/api/auth', authRoutes);
       app.use('/api/admin', adminRoutes);
       app.use('/api/caretakers', caretakerRoutes);
       app.use('/api/bookings', bookingRoutes);
+      app.use('/api/feedback', feedbackRoutes);
+      app.use('/api/payments', paymentRoutes);
     } catch (routeErr) {
       console.error('Warning: failed to mount some routes:', routeErr && routeErr.message ? routeErr.message : routeErr);
       if (routeErr && routeErr.stack) {
