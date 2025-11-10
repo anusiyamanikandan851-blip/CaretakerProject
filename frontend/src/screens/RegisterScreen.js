@@ -1,14 +1,14 @@
 import { useContext, useState } from 'react';
 import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import { COLORS } from '../utils/constants';
@@ -60,6 +60,8 @@ const RegisterScreen = ({ navigation }) => {
 
     if (!result.success) {
       Alert.alert('Registration Failed', result.message);
+    } else {
+      Alert.alert('Success', 'Account created successfully!');
     }
   };
 
@@ -75,70 +77,23 @@ const RegisterScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.form}>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Full Name</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your full name"
-              value={formData.name}
-              onChangeText={(value) => handleChange('name', value)}
-            />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your email"
-              value={formData.email}
-              onChangeText={(value) => handleChange('email', value)}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Phone Number</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your phone number"
-              value={formData.phone}
-              onChangeText={(value) => handleChange('phone', value)}
-              keyboardType="phone-pad"
-            />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>City</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your city"
-              value={formData.city}
-              onChangeText={(value) => handleChange('city', value)}
-            />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Password</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Create a password"
-              value={formData.password}
-              onChangeText={(value) => handleChange('password', value)}
-              secureTextEntry
-            />
-          </View>
-
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Confirm Password</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Confirm your password"
-              value={formData.confirmPassword}
-              onChangeText={(value) => handleChange('confirmPassword', value)}
-              secureTextEntry
-            />
-          </View>
+          {['name', 'email', 'phone', 'city', 'password', 'confirmPassword'].map((field, index) => (
+            <View style={styles.inputContainer} key={index}>
+              <Text style={styles.label}>
+                {field === 'confirmPassword' ? 'Confirm Password' :
+                 field.charAt(0).toUpperCase() + field.slice(1)}
+              </Text>
+              <TextInput
+                style={styles.input}
+                placeholder={`Enter your ${field}`}
+                value={formData[field]}
+                onChangeText={(value) => handleChange(field, value)}
+                secureTextEntry={field.toLowerCase().includes('password')}
+                keyboardType={field === 'phone' ? 'phone-pad' : 'default'}
+                autoCapitalize={field === 'email' ? 'none' : 'sentences'}
+              />
+            </View>
+          ))}
 
           <TouchableOpacity
             style={[styles.button, loading && styles.buttonDisabled]}

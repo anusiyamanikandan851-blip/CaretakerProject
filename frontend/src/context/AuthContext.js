@@ -1,5 +1,6 @@
+// src/context/AuthContext.js
+import React, { createContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createContext, useEffect, useState } from 'react';
 import { authAPI } from '../services/api';
 
 export const AuthContext = createContext();
@@ -9,41 +10,40 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const checkUser = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        const userData = await AsyncStorage.getItem('user');
+        if (token && userData) {
+          setUser(JSON.parse(userData));
+        }
+      } catch (err) {
+        console.error('Error checking user:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
     checkUser();
   }, []);
 
-  const checkUser = async () => {
-    try {
-      const token = await AsyncStorage.getItem('token');
-      const userData = await AsyncStorage.getItem('user');
-      
-      if (token && userData) {
-        setUser(JSON.parse(userData));
-      }
-    } catch (error) {
-      console.error('Error checking user:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const login = async (email, password, isAdmin = false) => {
     try {
-      const response = isAdmin 
+      const response = isAdmin
         ? await authAPI.adminLogin({ email, password })
         : await authAPI.login({ email, password });
-      
+
       const { token, user: userData } = response.data;
-      
+
       await AsyncStorage.setItem('token', token);
       await AsyncStorage.setItem('user', JSON.stringify(userData));
-      
       setUser(userData);
+
       return { success: true };
     } catch (error) {
+      console.error('Login error:', error.response?.data || error.message);
       return {
         success: false,
-        message: error.response?.data?.message || 'Login failed'
+        message: error.response?.data?.message || 'Login failed',
       };
     }
   };
@@ -52,16 +52,17 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authAPI.register(userData);
       const { token, user: newUser } = response.data;
-      
+
       await AsyncStorage.setItem('token', token);
       await AsyncStorage.setItem('user', JSON.stringify(newUser));
-      
       setUser(newUser);
+
       return { success: true };
     } catch (error) {
+      console.error('Register error:', error.response?.data || error.message);
       return {
         success: false,
-        message: error.response?.data?.message || 'Registration failed'
+        message: error.response?.data?.message || 'Registration failed',
       };
     }
   };
@@ -72,7 +73,7 @@ export const AuthProvider = ({ children }) => {
       await AsyncStorage.removeItem('user');
       setUser(null);
     } catch (error) {
-      console.error('Error logging out:', error);
+      console.error('Logout error:', error);
     }
   };
 

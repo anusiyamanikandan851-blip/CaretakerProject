@@ -1,15 +1,30 @@
-// Minimal auth middleware stub. In production replace with JWT verification
-// and user lookup (e.g., verify token and populate req.user).
-module.exports = function (req, res, next) {
-  // If an Authorization header exists we could parse it here.
-  // For now this is a passthrough so protected routes can be reached
-  // during development without a full auth implementation.
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
+
+module.exports = async function (req, res, next) {
   try {
-    // Optionally attach a stub user for testing
-    req.user = req.user || { id: 'stub-id', name: 'Stub User', email: 'stub@example.com' };
-    return next();
+    // Check for Authorization header
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ success: false, message: 'No token, authorization denied' });
+    }
+
+    // Extract token
+    const token = authHeader.split(' ')[1];
+
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Attach user to request
+    req.user = await User.findById(decoded.id).select('-password');
+
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: 'User not found' });
+    }
+
+    next();
   } catch (err) {
-    console.error('auth middleware error:', err);
-    return res.status(401).json({ success: false, message: 'Unauthorized' });
+    console.error('Auth middleware error:', err.message);
+    return res.status(401).json({ success: false, message: 'Invalid or expired token' });
   }
 };
