@@ -1,14 +1,14 @@
 import { useContext, useState } from 'react';
 import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import { COLORS } from '../utils/constants';
@@ -18,7 +18,7 @@ const LoginScreen = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+
   const { login } = useContext(AuthContext);
 
   const handleLogin = async () => {
@@ -57,7 +57,7 @@ const LoginScreen = ({ navigation }) => {
                 User
               </Text>
             </TouchableOpacity>
-            
+
             <TouchableOpacity
               style={[styles.toggleButton, isAdmin && styles.toggleActive]}
               onPress={() => setIsAdmin(true)}
@@ -127,120 +127,118 @@ const LoginScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.light
+    backgroundColor: COLORS.light,
   },
   scrollContent: {
     flexGrow: 1,
     justifyContent: 'center',
-    padding: 20
+    padding: 20,
   },
   header: {
     alignItems: 'center',
-    marginBottom: 40
+    marginBottom: 40,
   },
   title: {
     fontSize: 32,
     fontWeight: 'bold',
     color: COLORS.primary,
-    marginBottom: 8
+    marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: COLORS.gray
+    color: COLORS.gray,
   },
   form: {
     backgroundColor: COLORS.white,
     borderRadius: 15,
     padding: 20,
     elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4
+    // ✅ Modern shadow style for React Native Web
+    boxShadow: '0px 2px 4px rgba(0,0,0,0.1)',
   },
   toggleContainer: {
     flexDirection: 'row',
     marginBottom: 20,
     backgroundColor: COLORS.light,
     borderRadius: 10,
-    padding: 4
+    padding: 4,
   },
   toggleButton: {
     flex: 1,
     paddingVertical: 10,
     alignItems: 'center',
-    borderRadius: 8
+    borderRadius: 8,
   },
   toggleActive: {
-    backgroundColor: COLORS.primary
+    backgroundColor: COLORS.primary,
   },
   toggleText: {
     fontSize: 16,
     color: COLORS.gray,
-    fontWeight: '600'
+    fontWeight: '600',
   },
   toggleTextActive: {
-    color: COLORS.white
+    color: COLORS.white,
   },
   inputContainer: {
-    marginBottom: 20
+    marginBottom: 20,
   },
   label: {
     fontSize: 14,
     fontWeight: '600',
     color: COLORS.dark,
-    marginBottom: 8
+    marginBottom: 8,
   },
   input: {
     borderWidth: 1,
     borderColor: COLORS.gray,
     borderRadius: 10,
     padding: 12,
-    fontSize: 16
+    fontSize: 16,
   },
   button: {
     backgroundColor: COLORS.primary,
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
-    marginTop: 10
+    marginTop: 10,
   },
   buttonDisabled: {
-    opacity: 0.6
+    opacity: 0.6,
   },
   buttonText: {
     color: COLORS.white,
     fontSize: 18,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   linkButton: {
     marginTop: 20,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   linkText: {
     color: COLORS.gray,
-    fontSize: 14
+    fontSize: 14,
   },
   linkBold: {
     color: COLORS.primary,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   testInfo: {
     marginTop: 20,
     padding: 10,
     backgroundColor: COLORS.light,
-    borderRadius: 8
+    borderRadius: 8,
   },
   testTitle: {
     fontSize: 12,
     fontWeight: 'bold',
     color: COLORS.dark,
-    marginBottom: 4
+    marginBottom: 4,
   },
   testText: {
     fontSize: 11,
-    color: COLORS.gray
-  }
+    color: COLORS.gray,
+  },
 });
 
 export default LoginScreen;

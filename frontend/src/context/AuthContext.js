@@ -1,6 +1,6 @@
 // src/context/AuthContext.js
-import React, { createContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createContext, useEffect, useState } from 'react';
 import { authAPI } from '../services/api';
 
 export const AuthContext = createContext();
@@ -8,6 +8,9 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [userToken, setUserToken] = useState(null);
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -50,20 +53,35 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     try {
+      setIsLoading(true);
+      console.log('🔄 Starting registration process');
+
       const response = await authAPI.register(userData);
-      const { token, user: newUser } = response.data;
+      console.log('📥 Registration response:', response);
 
-      await AsyncStorage.setItem('token', token);
-      await AsyncStorage.setItem('user', JSON.stringify(newUser));
-      setUser(newUser);
+      if (response.success) {
+        // Clear any existing auth data
+        await AsyncStorage.removeItem('token');
+        await AsyncStorage.removeItem('user');
+        
+        return { 
+          success: true,
+          message: 'Registration successful'
+        };
+      }
 
-      return { success: true };
-    } catch (error) {
-      console.error('Register error:', error.response?.data || error.message);
       return {
         success: false,
-        message: error.response?.data?.message || 'Registration failed',
+        message: response.message || 'Registration failed'
       };
+    } catch (error) {
+      console.error('❌ Registration error:', error);
+      return {
+        success: false,
+        message: 'Registration failed. Please try again.'
+      };
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -78,7 +96,16 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      loading, 
+      isLoading, 
+      userToken, 
+      userData, 
+      login, 
+      register, 
+      logout 
+    }}>
       {children}
     </AuthContext.Provider>
   );
